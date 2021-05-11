@@ -17,7 +17,7 @@ class Serializer < SimpleDelegator
 
   def serialize
     self.class.attributes.reduce({}) do |hash, (attribute, transformation_proc)|
-      value = transformation_proc ? instance_eval(&transformation_proc) : object.public_send(attribute)
+      value = transformation_proc ? instance_eval(&transformation_proc) : public_send(attribute)
 
       hash[attribute] = value
 
