@@ -1,7 +1,7 @@
 # require 'pry-byebug'
 require 'date'
 
-class Serializer
+class Serializer < SimpleDelegator
   class << self
     def attribute(name, &block)
       @attributes ||= {}
@@ -13,23 +13,15 @@ class Serializer
     end
   end
 
-  attr_reader :object
-
-  def initialize(object)
-    @object = object
-  end
+  alias_method :object, :__getobj__
 
   def serialize
-    data = {}
+    self.class.attributes.reduce({}) do |hash, (attribute, transformation_proc)|
+      value = transformation_proc ? instance_eval(&transformation_proc) : object.public_send(attribute)
 
-    self.class.attributes.each do |key, proc|
-      if proc
-        data[key] = instance_eval(&proc)
-      else
-        data[key] = object.public_send(key)
-      end
+      hash[attribute] = value
+
+      hash
     end
-
-    return data
   end
 end
