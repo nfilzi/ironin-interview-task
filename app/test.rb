@@ -3,7 +3,7 @@ require_relative 'serializer'
 class FoobarSerializer < Serializer
   attribute :id
   attribute :date do
-    object.date.strftime("%d-%m-%Y")
+    date.strftime("%d-%m-%Y")
   end
 end
 
